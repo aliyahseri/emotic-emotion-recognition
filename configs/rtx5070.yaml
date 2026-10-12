@@ -1,0 +1,30 @@
+data:
+  train_csv: data/annotations/train.csv
+  val_csv: data/annotations/val.csv
+  test_csv: data/annotations/test.csv
+  image_root: data/raw/emotic/emotic
+  batch_size: 32          # RTX 5070 has 12GB VRAM - can push to 64 if needed
+  num_workers: 8          # Match CPU core count for optimal data loading
+
+model:
+  pretrained: true
+  dropout: 0.3
+
+training:
+  epochs: 50
+  
+  # Differential learning rates for fine-tuning
+  backbone_lr: 0.00001    # Slow - don't destroy pretrained features
+  head_lr: 0.0001         # Fast - new layers learn quickly
+  
+  weight_decay: 0.0001
+  lambda_vad: 0.5
+  
+  # RTX 5070: BF16 is natively supported, use it
+  mixed_precision: true
+  
+  # Gradient accumulation: effective batch = batch_size * steps
+  gradient_accumulation_steps: 1
+  
+  save_dir: checkpoints
+  save_every: 5
